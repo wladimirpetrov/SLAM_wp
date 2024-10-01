@@ -1,0 +1,28 @@
+<launch>
+    <arg name="teleop" default="False" />
+    <arg name="Gazebo" default="True" />
+    <arg name="slam_toolbox" default="True" />
+
+    <!-- Remote bringup for Turtlebot3 -->
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_remote.launch" />
+
+    <!-- Teleoperation for controlling Turtlebot3 with keyboard -->
+    <group if="$(arg teleop)">
+        <node pkg="turtlebot3_teleop" type="turtlebot3_teleop_key" name="navbot3_teleop_keyboard" output="screen"></node>
+    </group>
+
+    <!-- SLAM Toolbox for online asynchronous mapping -->
+    <group if="$(arg slam_toolbox)">
+        <include file="$(find slam_toolbox)/launch/online_async.launch" />
+    </group>
+
+    <!-- Gazebo simulation -->
+    <group if="$(arg Gazebo)">
+        <include file="$(find turtlebot3_gazebo)/launch/turtlebot3_house.launch" />
+    </group>
+
+    <!-- Navigation stack launch -->
+    <include file="$(find turtlebot3_navigation)/launch/move_base.launch" />
+    <node pkg="rviz" type="rviz" name="rviz" required="true" args="-d $(find turtlebot3_navigation)/rviz/turtlebot3_navigation.rviz" />
+</launch>
+
